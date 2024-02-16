@@ -2,7 +2,7 @@ import os,shutil,sys,pdb,re
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 import json,yaml,warnings,torch
-import platform
+import platform 
 import psutil
 import signal
 
@@ -313,7 +313,7 @@ def close1Bb():
     return "已终止GPT训练",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
 
 ps_slice=[]
-def open_slice(inp,opt_root,threshold,min_length,min_interval,hop_size,max_sil_kept,_max,alpha,n_parts):
+def open_slice(inp,opt_root,n_parts,max_sec):
     global ps_slice
     inp = my_utils.clean_path(inp)
     opt_root = my_utils.clean_path(opt_root)
@@ -327,7 +327,7 @@ def open_slice(inp,opt_root,threshold,min_length,min_interval,hop_size,max_sil_k
         return
     if (ps_slice == []):
         for i_part in range(n_parts):
-            cmd = '"%s" tools/slice_audio.py "%s" "%s" %s %s %s %s %s %s %s %s %s''' % (python_exec,inp, opt_root, threshold, min_length, min_interval, hop_size, max_sil_kept, _max, alpha, i_part, n_parts)
+            cmd = '"%s" tools/audio-slicer.py --input "%s" --output "%s" "%s" ' % (python_exec, inp, opt_root,  max_sec)
             print(cmd)
             p = Popen(cmd, shell=True)
             ps_slice.append(p)
@@ -666,11 +666,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 with gr.Row():
                     slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="")
                     slice_opt_root=gr.Textbox(label=i18n("切分后的子音频的输出根目录"),value="output/slicer_opt")
-                    threshold=gr.Textbox(label=i18n("threshold:音量小于这个值视作静音的备选切割点"),value="-34")
-                    min_length=gr.Textbox(label=i18n("min_length:每段最小多长，如果第一段太短一直和后面段连起来直到超过这个值"),value="4000")
-                    min_interval=gr.Textbox(label=i18n("min_interval:最短切割间隔"),value="300")
-                    hop_size=gr.Textbox(label=i18n("hop_size:怎么算音量曲线，越小精度越大计算量越高（不是精度越大效果越好）"),value="10")
-                    max_sil_kept=gr.Textbox(label=i18n("max_sil_kept:切完后静音最多留多长"),value="500")
+                    max_sec=gr.Textbox(label=i18n("切割后的音频片段单个最大长度(过长会导致训练爆显存)"),value="15")
                 with gr.Row():
                     open_slicer_button=gr.Button(i18n("开启语音切割"), variant="primary",visible=True)
                     close_slicer_button=gr.Button(i18n("终止语音切割"), variant="primary",visible=False)
@@ -738,7 +734,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
             if_uvr5.change(change_uvr5, [if_uvr5], [uvr5_info])
             open_asr_button.click(open_asr, [asr_inp_dir, asr_opt_dir, asr_model, asr_size, asr_lang], [asr_info,open_asr_button,close_asr_button])
             close_asr_button.click(close_asr, [], [asr_info,open_asr_button,close_asr_button])
-            open_slicer_button.click(open_slice, [slice_inp_path,slice_opt_root,threshold,min_length,min_interval,hop_size,max_sil_kept,_max,alpha,n_process], [slicer_info,open_slicer_button,close_slicer_button])
+            open_slicer_button.click(open_slice, [slice_inp_path,slice_opt_root,_max,alpha,n_process,max_sec], [slicer_info,open_slicer_button,close_slicer_button])
             close_slicer_button.click(close_slice, [], [slicer_info,open_slicer_button,close_slicer_button])
         with gr.TabItem(i18n("1-GPT-SoVITS-TTS")):
             with gr.Row():
