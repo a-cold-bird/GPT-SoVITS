@@ -248,6 +248,10 @@ def clean_text_inf(text, language):
     formattext = ""
     language = language.replace("all_","")
     for tmp in LangSegment.getTexts(text):
+        if language == "ja":
+            if tmp["lang"] == language or tmp["lang"] == "zh":
+                formattext += tmp["text"] + " "
+            continue
         if tmp["lang"] == language:
             formattext += tmp["text"] + " "
     while "  " in formattext:
@@ -279,8 +283,6 @@ def nonen_clean_text_inf(text, language):
         for tmp in LangSegment.getTexts(text):
             langlist.append(tmp["lang"])
             textlist.append(tmp["text"])
-    print(textlist)
-    print(langlist)
     phones_list = []
     word2ph_list = []
     norm_text_list = []
@@ -600,7 +602,7 @@ def get_weights_names():
 
 SoVITS_names, GPT_names = get_weights_names()
 
-with gr.Blocks(title="GPT-SoVITS WebUI") as app:
+with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
     gr.Markdown(
         value=i18n("本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责. <br>如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录<b>LICENSE</b>.")
     )

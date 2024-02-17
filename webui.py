@@ -337,13 +337,16 @@ def open_slice(inp,opt_root,n_parts,max_sec):
                 ps_slice.append(p)
             except Exception as e:
                 pass
-            
+        
         print(f"\n等待切割结束，检查{opt_root}文件夹，有报错也不用理会")
+        
         yield "切割执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
         for p in ps_slice:
             p.wait()
         ps_slice=[]
+        subprocess.run(["python", "tools/audio_killer.py"])
         yield "切割结束",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
+        
     else:
         yield "已有正在进行的切割任务，需先终止才能开启下一次任务", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
 
@@ -653,7 +656,7 @@ def close1abc():
         ps1abc=[]
     return "已终止所有一键三连进程", {"__type__": "update", "visible": True}, {"__type__": "update", "visible": False}
 
-with gr.Blocks(title="GPT-SoVITS WebUI") as app:
+with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
     gr.Markdown(
         value=
             i18n("本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责. <br>如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录<b>LICENSE</b>.")
@@ -678,7 +681,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 with gr.Row():
                     open_slicer_button=gr.Button(i18n("开启语音切割"), variant="primary",visible=True)
                     close_slicer_button=gr.Button(i18n("终止语音切割"), variant="primary",visible=False)
-                    n_process=gr.Slider(minimum=1,maximum=n_cpu,step=1,label=i18n("切割使用的进程数"),value=6,interactive=True)
+                    n_process=gr.Slider(minimum=1,maximum=n_cpu,step=1,label=i18n("切割使用的进程数"),value=4,interactive=True)
                     slicer_info = gr.Textbox(label=i18n("语音切割进程输出信息"))
             gr.Markdown(value=i18n("0c-多语种自动语音标注(ASR)工具"))
             with gr.Row():
