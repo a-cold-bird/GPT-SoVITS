@@ -81,7 +81,7 @@ if torch.backends.mps.is_available():
 
 if if_gpu_ok and len(gpu_infos) > 0:
     gpu_info = "\n".join(gpu_infos)
-    default_batch_size = min(mem) // 2
+    default_batch_size = min(mem) // 4
 else:
     gpu_info = i18n("很遗憾您这没有能用的显卡来支持您训练")
     default_batch_size = 1
@@ -674,7 +674,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                     alpha=gr.Slider(minimum=0,maximum=1,step=0.05,label=i18n("alpha_mix:混多少比例归一化后音频进来"),value=0.25,interactive=True)
                     n_process=gr.Slider(minimum=1,maximum=n_cpu,step=1,label=i18n("切割使用的进程数"),value=4,interactive=True)
                     slicer_info = gr.Textbox(label=i18n("语音切割进程输出信息"))
-            gr.Markdown(value=i18n("0c-中文批量离线ASR工具"))
+            gr.Markdown(value=i18n("0c-多语种自动语音标注(ASR)工具"))
             with gr.Row():
                 open_asr_button = gr.Button(i18n("开启离线批量ASR"), variant="primary",visible=True)
                 close_asr_button = gr.Button(i18n("终止ASR进程"), variant="primary",visible=False)
@@ -682,7 +682,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                     with gr.Row():
                         asr_inp_dir = gr.Textbox(
                             label=i18n("输入文件夹路径"),
-                            value="D:\\GPT-SoVITS\\raw\\xxx",
+                            value="output/slicer_opt",
                             interactive=True,
                         )
                         asr_opt_dir = gr.Textbox(
@@ -690,24 +690,25 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                             value       = "output/asr_opt",
                             interactive = True,
                         )
+                    gr.Markdown(value=i18n("强制使用fast whisper,识别为中文会自动切换funasr"))
                     with gr.Row():
                         asr_model = gr.Dropdown(
                             label       = i18n("ASR 模型"),
-                            choices     = list(asr_dict.keys()),
+                            choices     = ["Faster Whisper (多语种)"],
                             interactive = True,
-                            value="达摩 ASR (中文)"
+                            value="Faster Whisper (多语种)"
                         )
                         asr_size = gr.Dropdown(
                             label       = i18n("ASR 模型尺寸"),
-                            choices     = ["large"],
+                            choices     = ["large-v3"],
                             interactive = True,
-                            value="large"
+                            value="large-v3"
                         )
                         asr_lang = gr.Dropdown(
                             label       = i18n("ASR 语言设置"),
-                            choices     = ["zh"],
+                            choices     = ["auto", "zh", "en", "ja"],
                             interactive = True,
-                            value="zh"
+                            value="auto"
                         )
                     with gr.Row():
                         asr_info = gr.Textbox(label=i18n("ASR进程输出信息"))
@@ -726,7 +727,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 if_label = gr.Checkbox(label=i18n("是否开启打标WebUI"),show_label=True)
                 path_list = gr.Textbox(
                     label=i18n(".list标注文件的路径"),
-                    value="D:\\RVC1006\\GPT-SoVITS\\raw\\xxx.list",
+                    value="output/asr_opt/slicer_opt.list",
                     interactive=True,
                 )
                 label_info = gr.Textbox(label=i18n("打标工具进程输出信息"))
@@ -746,10 +747,10 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
             with gr.TabItem(i18n("1A-训练集格式化工具")):
                 gr.Markdown(value=i18n("输出logs/实验名目录下应有23456开头的文件和文件夹"))
                 with gr.Row():
-                    inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r"D:\RVC1006\GPT-SoVITS\raw\xxx.list",interactive=True)
+                    inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r"output/asr_opt/slicer_opt.list",interactive=True)
                     inp_wav_dir = gr.Textbox(
                         label=i18n("*训练集音频文件目录"),
-                        # value=r"D:\RVC1006\GPT-SoVITS\raw\xxx",
+                        value=r"output/slicer_opt",
                         interactive=True,
                         placeholder=i18n("填切割后音频所在目录！读取的音频文件完整路径=该目录-拼接-list文件里波形对应的文件名（不是全路径）。如果留空则使用.list文件里的绝对全路径。")
                     )
@@ -804,7 +805,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 with gr.Row():
                     batch_size1Bb = gr.Slider(minimum=1,maximum=40,step=1,label=i18n("每张显卡的batch_size"),value=default_batch_size,interactive=True)
                     total_epoch1Bb = gr.Slider(minimum=2,maximum=50,step=1,label=i18n("总训练轮数total_epoch"),value=15,interactive=True)
-                    if_dpo = gr.Checkbox(label=i18n("是否开启dpo训练选项(实验性)"), value=False, interactive=True, show_label=True)
+                    if_dpo = gr.Checkbox(label=i18n("是否开启dpo训练选项(实验性)"), value=True, interactive=True, show_label=True)
                     if_save_latest1Bb = gr.Checkbox(label=i18n("是否仅保存最新的ckpt文件以节省硬盘空间"), value=True, interactive=True, show_label=True)
                     if_save_every_weights1Bb = gr.Checkbox(label=i18n("是否在每次保存时间点将最终小模型保存至weights文件夹"), value=True, interactive=True, show_label=True)
                     save_every_epoch1Bb = gr.Slider(minimum=1,maximum=50,step=1,label=i18n("保存频率save_every_epoch"),value=5,interactive=True)
