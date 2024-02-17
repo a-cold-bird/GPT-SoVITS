@@ -67,4 +67,3 @@ if __name__ == "__main__":
 
     for filename in os.listdir(input_dir):
         auto_slicer.auto_slice(filename, input_dir, output_dir, max_sec)
-

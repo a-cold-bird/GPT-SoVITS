@@ -2,7 +2,7 @@ import os,shutil,sys,pdb,re
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 import json,yaml,warnings,torch
-import platform 
+import platform
 import psutil
 import signal
 
@@ -81,7 +81,7 @@ if torch.backends.mps.is_available():
 
 if if_gpu_ok and len(gpu_infos) > 0:
     gpu_info = "\n".join(gpu_infos)
-    default_batch_size = min(mem) // 4
+    default_batch_size = min(mem) // 2
 else:
     gpu_info = i18n("很遗憾您这没有能用的显卡来支持您训练")
     default_batch_size = 1
@@ -311,9 +311,11 @@ def close1Bb():
         kill_process(p_train_GPT.pid)
         p_train_GPT=None
     return "已终止GPT训练",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
+import subprocess
 
 ps_slice=[]
 def open_slice(inp,opt_root,n_parts,max_sec):
+    print (inp,opt_root,n_parts,max_sec)
     global ps_slice
     inp = my_utils.clean_path(inp)
     opt_root = my_utils.clean_path(opt_root)
@@ -325,12 +327,18 @@ def open_slice(inp,opt_root,n_parts,max_sec):
     else:
         yield "输入路径存在但既不是文件也不是文件夹",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
         return
+
     if (ps_slice == []):
         for i_part in range(n_parts):
-            cmd = '"%s" tools/audio-slicer.py --input "%s" --output "%s" "%s" ' % (python_exec, inp, opt_root,  max_sec)
+            cmd = '"%s" tools/audio-slicer.py --input "%s" --output "%s" "%s"' % (python_exec, inp, opt_root, max_sec)
             print(cmd)
-            p = Popen(cmd, shell=True)
-            ps_slice.append(p)
+            try:
+                p = subprocess.Popen(cmd, shell=True, stderr=subprocess.DEVNULL)
+                ps_slice.append(p)
+            except Exception as e:
+                pass
+            
+        print(f"\n等待切割结束，检查{opt_root}文件夹，有报错也不用理会")
         yield "切割执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
         for p in ps_slice:
             p.wait()
@@ -664,15 +672,13 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
             gr.Markdown(value=i18n("0b-语音切分工具"))
             with gr.Row():
                 with gr.Row():
-                    slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="")
+                    slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="input")
                     slice_opt_root=gr.Textbox(label=i18n("切分后的子音频的输出根目录"),value="output/slicer_opt")
                     max_sec=gr.Textbox(label=i18n("切割后的音频片段单个最大长度(过长会导致训练爆显存)"),value="15")
                 with gr.Row():
                     open_slicer_button=gr.Button(i18n("开启语音切割"), variant="primary",visible=True)
                     close_slicer_button=gr.Button(i18n("终止语音切割"), variant="primary",visible=False)
-                    _max=gr.Slider(minimum=0,maximum=1,step=0.05,label=i18n("max:归一化后最大值多少"),value=0.9,interactive=True)
-                    alpha=gr.Slider(minimum=0,maximum=1,step=0.05,label=i18n("alpha_mix:混多少比例归一化后音频进来"),value=0.25,interactive=True)
-                    n_process=gr.Slider(minimum=1,maximum=n_cpu,step=1,label=i18n("切割使用的进程数"),value=4,interactive=True)
+                    n_process=gr.Slider(minimum=1,maximum=n_cpu,step=1,label=i18n("切割使用的进程数"),value=6,interactive=True)
                     slicer_info = gr.Textbox(label=i18n("语音切割进程输出信息"))
             gr.Markdown(value=i18n("0c-多语种自动语音标注(ASR)工具"))
             with gr.Row():
@@ -735,7 +741,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
             if_uvr5.change(change_uvr5, [if_uvr5], [uvr5_info])
             open_asr_button.click(open_asr, [asr_inp_dir, asr_opt_dir, asr_model, asr_size, asr_lang], [asr_info,open_asr_button,close_asr_button])
             close_asr_button.click(close_asr, [], [asr_info,open_asr_button,close_asr_button])
-            open_slicer_button.click(open_slice, [slice_inp_path,slice_opt_root,_max,alpha,n_process,max_sec], [slicer_info,open_slicer_button,close_slicer_button])
+            open_slicer_button.click(open_slice, [slice_inp_path,slice_opt_root,n_process,max_sec], [slicer_info,open_slicer_button,close_slicer_button])
             close_slicer_button.click(close_slice, [], [slicer_info,open_slicer_button,close_slicer_button])
         with gr.TabItem(i18n("1-GPT-SoVITS-TTS")):
             with gr.Row():
@@ -750,7 +756,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                     inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r"output/asr_opt/slicer_opt.list",interactive=True)
                     inp_wav_dir = gr.Textbox(
                         label=i18n("*训练集音频文件目录"),
-                        value=r"output/slicer_opt",
+                        value= "output/slicer_opt",
                         interactive=True,
                         placeholder=i18n("填切割后音频所在目录！读取的音频文件完整路径=该目录-拼接-list文件里波形对应的文件名（不是全路径）。如果留空则使用.list文件里的绝对全路径。")
                     )
