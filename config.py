@@ -24,7 +24,7 @@ else:
 
 webui_port_main = 9874
 webui_port_uvr5 = 9873
-webui_port_infer_tts = 9872
+webui_port_infer_tts = 6006
 webui_port_subfix = 9871
 
 api_port = 9880
