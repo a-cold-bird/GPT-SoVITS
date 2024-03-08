@@ -16,6 +16,7 @@ logging.getLogger("asyncio").setLevel(logging.ERROR)
 logging.getLogger("charset_normalizer").setLevel(logging.ERROR)
 logging.getLogger("torchaudio._extension").setLevel(logging.ERROR)
 import pdb
+import torch
 
 if os.path.exists("./gweight.txt"):
     with open("./gweight.txt", 'r', encoding="utf-8") as file:
@@ -48,11 +49,11 @@ is_share = os.environ.get("is_share", "False")
 is_share = eval(is_share)
 if "_CUDA_VISIBLE_DEVICES" in os.environ:
     os.environ["CUDA_VISIBLE_DEVICES"] = os.environ["_CUDA_VISIBLE_DEVICES"]
-is_half = eval(os.environ.get("is_half", "True"))
+is_half = eval(os.environ.get("is_half", "True")) and not torch.backends.mps.is_available()
 import gradio as gr
 from transformers import AutoModelForMaskedLM, AutoTokenizer
 import numpy as np
-import librosa, torch
+import librosa
 from feature_extractor import cnhubert
 
 cnhubert.cnhubert_base_path = cnhubert_base_path
@@ -259,11 +260,15 @@ def get_phones_and_bert(text,language):
     elif language in {"zh", "ja","auto"}:
         textlist=[]
         langlist=[]
-        LangSegment.setfilters(["zh","ja","en"])
+        LangSegment.setfilters(["zh","ja","en","ko"])
         if language == "auto":
             for tmp in LangSegment.getTexts(text):
-                langlist.append(tmp["lang"])
-                textlist.append(tmp["text"])
+                if tmp["lang"] == "ko":
+                    langlist.append("zh")
+                    textlist.append(tmp["text"])
+                else:
+                    langlist.append(tmp["lang"])
+                    textlist.append(tmp["text"])
         else:
             for tmp in LangSegment.getTexts(text):
                 if tmp["lang"] == "en":
@@ -563,12 +568,12 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
             inp_ref = gr.Audio(label=i18n("请上传3~10秒内参考音频，超过会报错！"), type="filepath")
             with gr.Column():
                 ref_text_free = gr.Checkbox(label=i18n("开启无参考文本模式。不填参考文本亦相当于开启。"), value=False, interactive=True, show_label=True)
-                gr.Markdown(i18n("使用无参考文本模式时建议使用微调的GPT"))
+                gr.Markdown(i18n("使用无参考文本模式时建议使用微调的GPT，听不清参考音频说的啥(不晓得写啥)可以开，开启后无视填写的参考文本。"))
                 prompt_text = gr.Textbox(label=i18n("参考音频的文本"), value="")
             prompt_language = gr.Dropdown(
                 label=i18n("参考音频的语种"), choices=[i18n("中文"), i18n("英文"), i18n("日文"), i18n("中英混合"), i18n("日英混合"), i18n("多语种混合")], value=i18n("中文")
             )
-        gr.Markdown(value=i18n("*请填写需要合成的目标文本。中英混合选中文，日英混合选日文，中日混合暂不支持，非目标语言文本自动遗弃。"))
+        gr.Markdown(value=i18n("*请填写需要合成的目标文本和语种模式"))
         with gr.Row():
             text = gr.Textbox(label=i18n("需要合成的文本"), value="")
             text_language = gr.Dropdown(
@@ -581,7 +586,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
                 interactive=True,
             )
             with gr.Row():
-                gr.Markdown("gpt采样参数(无参考文本时不要太低)：")
+                gr.Markdown(value=i18n("gpt采样参数(无参考文本时不要太低)："))
                 top_k = gr.Slider(minimum=1,maximum=100,step=1,label=i18n("top_k"),value=5,interactive=True)
                 top_p = gr.Slider(minimum=0,maximum=1,step=0.05,label=i18n("top_p"),value=1,interactive=True)
                 temperature = gr.Slider(minimum=0,maximum=1,step=0.05,label=i18n("temperature"),value=1,interactive=True)
