@@ -708,18 +708,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
                     alpha=gr.Slider(minimum=0,maximum=1,step=0.05,label=i18n("alpha_mix:混多少比例归一化后音频进来"),value=0.25,interactive=True)
                     n_process=gr.Slider(minimum=1,maximum=n_cpu,step=1,label=i18n("切割使用的进程数"),value=4,interactive=True)
                     slicer_info = gr.Textbox(label=i18n("语音切割进程输出信息"))
-<<<<<<< HEAD
             gr.Markdown(value=i18n("0c-多语种自动语音标注(ASR)工具"))
-=======
-            gr.Markdown(value=i18n("0bb-语音降噪工具"))
-            with gr.Row():
-                open_denoise_button = gr.Button(i18n("开启语音降噪"), variant="primary",visible=True)
-                close_denoise_button = gr.Button(i18n("终止语音降噪进程"), variant="primary",visible=False)
-                denoise_input_dir=gr.Textbox(label=i18n("降噪音频文件输入文件夹"),value="")
-                denoise_output_dir=gr.Textbox(label=i18n("降噪结果输出文件夹"),value="output/denoise_opt")
-                denoise_info = gr.Textbox(label=i18n("语音降噪进程输出信息"))
-            gr.Markdown(value=i18n("0c-中文批量离线ASR工具"))
->>>>>>> e04b3f6d6b57310f88f99ce5f50a4e37df019256
             with gr.Row():
                 open_asr_button = gr.Button(i18n("开启离线批量ASR"), variant="primary",visible=True)
                 close_asr_button = gr.Button(i18n("终止ASR进程"), variant="primary",visible=False)
@@ -782,8 +771,6 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
             close_asr_button.click(close_asr, [], [asr_info,open_asr_button,close_asr_button])
             open_slicer_button.click(open_slice, [slice_inp_path,slice_opt_root,threshold,min_length,min_interval,hop_size,max_sil_kept,_max,alpha,n_process], [slicer_info,open_slicer_button,close_slicer_button])
             close_slicer_button.click(close_slice, [], [slicer_info,open_slicer_button,close_slicer_button])
-            open_denoise_button.click(open_denoise, [denoise_input_dir,denoise_output_dir], [denoise_info,open_denoise_button,close_denoise_button])
-            close_denoise_button.click(close_denoise, [], [denoise_info,open_denoise_button,close_denoise_button])
 
         with gr.TabItem(i18n("1-GPT-SoVITS-TTS")):
             with gr.Row():
