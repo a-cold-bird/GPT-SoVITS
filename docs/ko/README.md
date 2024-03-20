@@ -57,13 +57,7 @@ bash install.sh
 
 ### macOS
 
-다음 조건을 충족하는 Mac에서만 모델을 훈련할 수 있습니다:
-
-- Apple 실리콘을 탑재한 Mac
-- macOS 12.3 이상 버전
-- `xcode-select --install`을 실행하여 Xcode 명령줄 도구가 설치됨
-
-**모든 Mac은 CPU를 사용하여 추론할 수 있으며, GPU 추론보다 우수한 성능을 보여주었습니다.**
+**주의: Mac에서 GPU로 훈련된 모델은 다른 OS에서 훈련된 모델에 비해 품질이 낮습니다. 해당 문제를 해결하기 전까지 MacOS에선 CPU를 사용하여 훈련을 진행합니다.**
 
 먼저 `brew install ffmpeg` 또는 `conda install ffmpeg`를 실행하여 FFmpeg가 설치되었는지 확인한 다음, 다음 명령어를 사용하여 설치하세요:
 
@@ -71,11 +65,8 @@ bash install.sh
 conda create -n GPTSoVits python=3.9
 conda activate GPTSoVits
 
-pip3 install --pre torch torchaudio --index-url https://download.pytorch.org/whl/nightly/cpu
 pip install -r requirements.txt
 ```
-
-_참고: PyTorch Nightly가 설치되어야만 모델을 훈련할 수 있습니다._
 
 ### 수동 설치
 
