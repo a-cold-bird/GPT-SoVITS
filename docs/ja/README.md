@@ -8,10 +8,11 @@
 <img src="https://counter.seku.su/cmoe?name=gptsovits&theme=r34" /><br>
 
 [![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/RVC-Boss/GPT-SoVITS/blob/main/colab_webui.ipynb)
-[![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/RVC-Boss/GPT-SoVITS/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/RVC-Boss/GPT-SoVITS/blob/main/LICENSE)
 [![Huggingface](https://img.shields.io/badge/🤗%20-Models%20Repo-yellow.svg?style=for-the-badge)](https://huggingface.co/lj1995/GPT-SoVITS/tree/main)
+[![Discord](https://img.shields.io/discord/1198701940511617164?color=%23738ADB&label=Discord&style=for-the-badge)](https://discord.gg/dnrgs5GHfG)
 
-[**English**](../../README.md) | [**中文简体**](../cn/README.md) | [**日本語**](./README.md) | [**한국어**](../ko/README.md)
+[**English**](../../README.md) | [**中文简体**](../cn/README.md) | **日本語** | [**한국어**](../ko/README.md) | [**Türkçe**](../tr/README.md)
 
 </div>
 
@@ -33,19 +34,24 @@
 
 https://github.com/RVC-Boss/GPT-SoVITS/assets/129054828/05bee1fa-bdd8-4d85-9350-80c060ab47fb
 
+**ユーザーマニュアル: [简体中文](https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e) | [English](https://rentry.co/GPT-SoVITS-guide#/)**
+
 ## インストール
 
 ### テスト済みの環境
 
 - Python 3.9, PyTorch 2.0.1, CUDA 11
 - Python 3.10.13, PyTorch 2.1.2, CUDA 12.3
-- Python 3.9, PyTorch 2.3.0.dev20240122, macOS 14.3 (Apple silicon)
+- Python 3.9, PyTorch 2.2.2, macOS 14.4.1 (Apple silicon)
+- Python 3.9, PyTorch 2.2.2, CPUデバイス
 
 _注記: numba==0.56.4 は py<3.11 が必要です_
 
 ### Windows
 
-Windows ユーザーの場合（win>=10 でテスト済み）、[事前にパッケージ化されたディストリビューション](https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-beta.7z?download=true)を直接ダウンロードし、_go-webui.bat_ をダブルクリックして GPT-SoVITS-WebUI を起動することができます。
+Windows ユーザーの場合（win>=10 でテスト済み）、[0206fix3 パッケージ](https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-beta-fast-inference-branch.7z?download=true) または [0217fix2 パッケージ](https://huggingface.co/lj1995/GPT-SoVITS-windows-package/resolve/main/GPT-SoVITS-beta0217fix2.7z?download=true) をダウンロードして、解凍後に _go-webui.bat_ をダブルクリックするだけで GPT-SoVITS-WebUI を起動できます。
+
+_注：0206バージョンの推論速度は速いですが、0217の新バージョンの推論品質は優れています。必要に応じて選択してください。_
 
 ### Linux
 
@@ -59,7 +65,9 @@ bash install.sh
 
 **注：MacでGPUを使用して訓練されたモデルは、他のデバイスで訓練されたモデルと比較して著しく品質が低下するため、当面はCPUを使用して訓練します。**
 
-まず、`brew install ffmpeg`または`conda install ffmpeg`を実行してFFmpegをインストールしたことを確認してください。次に、以下のコマンドを使用してインストールします：
+1. `xcode-select --install` を実行して、Xcodeコマンドラインツールをインストールします。
+2. `brew install ffmpeg` または `conda install ffmpeg` を実行して、FFmpegをインストールします。
+3. 上記の手順を完了した後、以下のコマンドを実行してこのプロジェクトをインストールします。
 
 ```bash
 conda create -n GPTSoVits python=3.9
@@ -127,7 +135,7 @@ docker run --rm -it --gpus=all --env=is_half=False --volume=G:\GPT-SoVITS-Docker
 
 [GPT-SoVITS Models](https://huggingface.co/lj1995/GPT-SoVITS) から事前訓練済みモデルをダウンロードし、`GPT_SoVITSpretrained_models` に置きます。
 
-中国語 ASR（追加）については、[Damo ASR Model](https://modelscope.cn/models/damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/files)、[Damo VAD Model](https://modelscope.cn/models/damo/speech_fsmn_vad_zh-cn-16k-common-pytorch/files)、[Damo Punc Model](https://modelscope.cn/models/damo/punc_ct-transformer_zh-cn-common-vocab272727-pytorch/files) からモデルをダウンロードし、`tools/damo_asr/models` に置いてください。
+中国語 ASR（追加）については、[Damo ASR Model](https://modelscope.cn/models/damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/files)、[Damo VAD Model](https://modelscope.cn/models/damo/speech_fsmn_vad_zh-cn-16k-common-pytorch/files)、[Damo Punc Model](https://modelscope.cn/models/damo/punc_ct-transformer_zh-cn-common-vocab272727-pytorch/files) からモデルをダウンロードし、`tools/asr/models` に置いてください。
 
 UVR5 (Vocals/Accompaniment Separation & Reverberation Removal, additionally) の場合は、[UVR5 Weights](https://huggingface.co/lj1995/VoiceConversionWebUI/tree/main/uvr5_weights) からモデルをダウンロードして `tools/uvr5/uvr5_weights` に置きます。
 
@@ -171,7 +179,7 @@ D:\GPT-SoVITS\xxx/xxx.wav|xxx|en|I like playing Genshin.
   - [ ] より良い sovits ベースモデル（音質向上）
   - [ ] モデルミックス
 
-## (オプション) 必要に応じて、コマンドライン操作モードが提供されます。
+## (追加の) コマンドラインから実行する方法
 コマンド ラインを使用して UVR5 の WebUI を開きます
 ```
 python tools/uvr5/webui.py "<infer_device>" <is_half> <webui_port_uvr5>
@@ -192,33 +200,42 @@ python audio_slicer.py \
 ```
 コマンドラインを使用してデータセット ASR 処理を行う方法です (中国語のみ)
 ```
-python tools/damo_asr/cmd-asr.py "<Path to the directory containing input audio files>"
+python tools/asr/funasr_asr.py -i <input> -o <output>
 ```
 ASR処理はFaster_Whisperを通じて実行されます(中国語を除くASRマーキング)
 
 (進行状況バーは表示されません。GPU のパフォーマンスにより時間遅延が発生する可能性があります)
 ```
-python ./tools/damo_asr/WhisperASR.py -i <input> -o <output> -f <file_name.list> -l <language>
+python ./tools/asr/fasterwhisper_asr.py -i <input> -o <output> -l <language>
 ```
 カスタムリストの保存パスが有効になっています
+
 ## クレジット
 
-以下のプロジェクトとコントリビューターに感謝します:
+特に以下のプロジェクトと貢献者に感謝します：
 
+### 理論研究
 - [ar-vits](https://github.com/innnky/ar-vits)
 - [SoundStorm](https://github.com/yangdongchao/SoundStorm/tree/master/soundstorm/s1/AR)
 - [vits](https://github.com/jaywalnut310/vits)
 - [TransferTTS](https://github.com/hcy71o/TransferTTS/blob/master/models.py#L556)
-- [Chinese Speech Pretrain](https://github.com/TencentGameMate/chinese_speech_pretrain)
 - [contentvec](https://github.com/auspicious3000/contentvec/)
 - [hifi-gan](https://github.com/jik876/hifi-gan)
-- [Chinese-Roberta-WWM-Ext-Large](https://huggingface.co/hfl/chinese-roberta-wwm-ext-large)
 - [fish-speech](https://github.com/fishaudio/fish-speech/blob/main/tools/llama/generate.py#L41)
+### 事前学習モデル
+- [Chinese Speech Pretrain](https://github.com/TencentGameMate/chinese_speech_pretrain)
+- [Chinese-Roberta-WWM-Ext-Large](https://huggingface.co/hfl/chinese-roberta-wwm-ext-large)
+### 推論用テキストフロントエンド
+- [paddlespeech zh_normalization](https://github.com/PaddlePaddle/PaddleSpeech/tree/develop/paddlespeech/t2s/frontend/zh_normalization)
+- [LangSegment](https://github.com/juntaosun/LangSegment)
+### WebUI ツール
 - [ultimatevocalremovergui](https://github.com/Anjok07/ultimatevocalremovergui)
 - [audio-slicer](https://github.com/openvpi/audio-slicer)
 - [SubFix](https://github.com/cronrpc/SubFix)
 - [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 - [gradio](https://github.com/gradio-app/gradio)
+- [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
+- [FunASR](https://github.com/alibaba-damo-academy/FunASR)
 
 ## すべてのコントリビューターに感謝します
 
