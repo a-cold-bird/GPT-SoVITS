@@ -414,16 +414,13 @@ def open_slice(inp,opt_root,threshold,min_length,min_interval,hop_size,max_sil_k
             print(cmd)
             p = Popen(cmd, shell=True)
             ps_slice.append(p)
-        
         print(f"\n等待切割结束，检查{opt_root}文件夹，有报错也不用理会")
         
-        yield "切割执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
+        yield "切割执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}, {"__type__": "update"}, {"__type__": "update"}, {"__type__": "update"}
         for p in ps_slice:
             p.wait()
         ps_slice=[]
-        subprocess.run(["python", "tools/audio_killer.py"])
-        yield "切割结束",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
-        
+        yield "切割结束", {"__type__":"update","visible":True}, {"__type__":"update","visible":False}, {"__type__": "update", "value":opt_root}, {"__type__": "update", "value":opt_root}, {"__type__": "update", "value":opt_root}
     else:
         yield "已有正在进行的切割任务，需先终止才能开启下一次任务", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}, {"__type__": "update"}, {"__type__": "update"}, {"__type__": "update"}
 
@@ -781,7 +778,7 @@ else:
     p = Popen(cmd, shell=True)
     p.wait()
 
-with gr.Blocks(title="GPT-SoVITS WebUI") as app:
+with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
     gr.Markdown(
         value=
             i18n("本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责. <br>如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录<b>LICENSE</b>.")
@@ -801,7 +798,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
             with gr.Row():
                 with gr.Column(scale=3):
                     with gr.Row():
-                        slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="")
+                        slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="input")
                         slice_opt_root=gr.Textbox(label=i18n("切分后的子音频的输出根目录"),value="output/slicer_opt")
                     with gr.Row():
                         threshold=gr.Textbox(label=i18n("threshold:音量小于这个值视作静音的备选切割点"),value="-34")

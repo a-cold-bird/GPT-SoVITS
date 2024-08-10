@@ -137,7 +137,8 @@ with gr.Blocks(title="UVR5 WebUI",theme=gr.themes.Soft()) as app:
                     with gr.Column():
                         dir_wav_input = gr.Textbox(
                             label=i18n("输入待处理音频文件夹路径"),
-                            placeholder="C:\\Users\\Desktop\\todo-songs",
+                            placeholder="请输入绝对路径",
+                            value="/root/autodl-tmp/workdir/GPT-SoVITS/input"
                         )
                         wav_inputs = gr.File(
                             file_count="multiple", label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹")
