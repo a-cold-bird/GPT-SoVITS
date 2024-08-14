@@ -399,6 +399,9 @@ def close1Bb():
     return "已终止GPT训练", {"__type__":"update","visible":True}, {"__type__":"update","visible":False}
 
 ps_slice=[]
+
+import subprocess
+
 def open_slice(inp,opt_root,threshold,min_length,min_interval,hop_size,max_sil_kept,_max,alpha,n_parts):
     global ps_slice
     inp = my_utils.clean_path(inp)
@@ -422,12 +425,9 @@ def open_slice(inp,opt_root,threshold,min_length,min_interval,hop_size,max_sil_k
         for p in ps_slice:
             p.wait()
         ps_slice=[]
-        subprocess.run(["python", "tools/audio_killer.py"])
-        yield "切割结束",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
-        
+        yield "切割结束", {"__type__":"update","visible":True}, {"__type__":"update","visible":False}, {"__type__": "update", "value":opt_root}, {"__type__": "update", "value":opt_root}, {"__type__": "update", "value":opt_root}
     else:
         yield "已有正在进行的切割任务，需先终止才能开启下一次任务", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}, {"__type__": "update"}, {"__type__": "update"}, {"__type__": "update"}
-
 def close_slice():
     global ps_slice
     if (ps_slice != []):
@@ -785,7 +785,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
             with gr.Row():
                 with gr.Column(scale=3):
                     with gr.Row():
-                        slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="")
+                        slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="input")
                         slice_opt_root=gr.Textbox(label=i18n("切分后的子音频的输出根目录"),value="output/slicer_opt")
                     with gr.Row():
                         threshold=gr.Textbox(label=i18n("threshold:音量小于这个值视作静音的备选切割点"),value="-34")
@@ -817,7 +817,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
                     with gr.Row():
                         asr_inp_dir = gr.Textbox(
                             label=i18n("输入文件夹路径"),
-                            value="D:\\GPT-SoVITS\\raw\\xxx",
+                            value="output/slicer_opt",
                             interactive=True,
                         )
                         asr_opt_dir = gr.Textbox(
