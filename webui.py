@@ -911,7 +911,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
                 gr.Markdown(value=i18n("输出logs/实验名目录下应有23456开头的文件和文件夹"))
                 with gr.Row():
                     with gr.Row():
-                        inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r""output/asr_opt/slicer_opt.list",interactive=True,scale=10)
+                        inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r"output/asr_opt/slicer_opt.list",interactive=True,scale=10)
                     with gr.Row():
                         inp_wav_dir = gr.Textbox(
                             label=i18n("*训练集音频文件目录"),
