@@ -30,4 +30,3 @@ asr_dict = {
         'precision': ['float32', 'float16', 'int8']
     },
 }
-

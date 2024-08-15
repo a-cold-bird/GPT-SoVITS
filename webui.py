@@ -829,7 +829,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
                     with gr.Row():
                         asr_model = gr.Dropdown(
                             label       = i18n("ASR 模型"),
-                            choices     = ["Faster Whisper (多语种)"],
+                            choices     = list(asr_dict.keys()),
                             interactive = True,
                             value="Faster Whisper (多语种)"
                         )
