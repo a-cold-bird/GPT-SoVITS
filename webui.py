@@ -835,21 +835,21 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
                         )
                         asr_size = gr.Dropdown(
                             label       = i18n("ASR 模型尺寸"),
-                            choices     = ["large"],
+                            choices     = ["large-v3"],
                             interactive = True,
-                            value="large"
+                            value="large-v3"
                         )
                         asr_lang = gr.Dropdown(
                             label       = i18n("ASR 语言设置"),
-                            choices     = ["zh","yue"],
+                            choices     = ["auto"],
                             interactive = True,
-                            value="zh"
+                            value="auto"
                         )
                         asr_precision = gr.Dropdown(
                             label       = i18n("数据类型精度"),
-                            choices     = ["float32"],
+                            choices     = ["float16"],
                             interactive = True,
-                            value="float32"
+                            value="float16"
                         ) 
                     with gr.Row():
                         asr_info = gr.Textbox(label=i18n("ASR进程输出信息"))     
