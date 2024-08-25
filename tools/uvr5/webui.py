@@ -14,6 +14,11 @@ from mdxnet import MDXNetDereverb
 from vr import AudioPre, AudioPreDeEcho
 from bsroformer import BsRoformer_Loader
 
+try:
+    import gradio.analytics as analytics
+    analytics.version_check = lambda:None
+except:...
+
 weight_uvr5_root = "tools/uvr5/uvr5_weights"
 uvr5_names = []
 for name in os.listdir(weight_uvr5_root):
@@ -195,7 +200,7 @@ with gr.Blocks(title="UVR5 WebUI",theme=gr.themes.Soft()) as app:
                         [vc_output4],
                         api_name="uvr_convert",
                     )
-app.queue(concurrency_count=511, max_size=1022).launch(
+app.queue().launch(#concurrency_count=511, max_size=1022
     server_name="0.0.0.0",
     inbrowser=True,
     share=is_share,
