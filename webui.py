@@ -791,7 +791,7 @@ else:
 
 def sync(text):
     return {'__type__':'update','value':text}
-with gr.Blocks(title="GPT-SoVITS WebUI") as app:
+with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
     gr.Markdown(
         value=
             i18n("本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责. <br>如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录<b>LICENSE</b>.")
@@ -814,12 +814,12 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
             with gr.Row():
                 with gr.Column(scale=3):
                     with gr.Row():
-                        slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="")
+                        slice_inp_path=gr.Textbox(label=i18n("音频自动切分输入路径，可文件可文件夹"),value="input")
                         slice_opt_root=gr.Textbox(label=i18n("切分后的子音频的输出根目录"),value="output/slicer_opt")
                     with gr.Row():
                         threshold=gr.Textbox(label=i18n("threshold:音量小于这个值视作静音的备选切割点"),value="-34")
                         min_length=gr.Textbox(label=i18n("min_length:每段最小多长，如果第一段太短一直和后面段连起来直到超过这个值"),value="4000")
-                        min_interval=gr.Textbox(label=i18n("min_interval:最短切割间隔"),value="300")
+                        min_interval=gr.Textbox(label=i18n("min_interval:最短切割间隔"),value="100")
                         hop_size=gr.Textbox(label=i18n("hop_size:怎么算音量曲线，越小精度越大计算量越高（不是精度越大效果越好）"),value="10")
                         max_sil_kept=gr.Textbox(label=i18n("max_sil_kept:切完后静音最多留多长"),value="500")
                     with gr.Row():
@@ -846,7 +846,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                     with gr.Row():
                         asr_inp_dir = gr.Textbox(
                             label=i18n("输入文件夹路径"),
-                            value="D:\\GPT-SoVITS\\raw\\xxx",
+                            value="output/slicer_opt",
                             interactive=True,
                         )
                         asr_opt_dir = gr.Textbox(
@@ -913,7 +913,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                     with gr.Row():
                         path_list = gr.Textbox(
                         label=i18n(".list标注文件的路径"),
-                        value="D:\\RVC1006\\GPT-SoVITS\\raw\\xxx.list",
+                        value="output/asr_opt/slicer_opt.list",
                         interactive=True,
                     )
                         label_info = gr.Textbox(label=i18n("打标工具进程输出信息"))
@@ -939,11 +939,11 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 gr.Markdown(value=i18n("输出logs/实验名目录下应有23456开头的文件和文件夹"))
                 with gr.Row():
                     with gr.Row():
-                        inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r"D:\RVC1006\GPT-SoVITS\raw\xxx.list",interactive=True,scale=10)
+                        inp_text = gr.Textbox(label=i18n("*文本标注文件"),value=r"output/asr_opt/slicer_opt.list",interactive=True,scale=10)
                     with gr.Row():
                         inp_wav_dir = gr.Textbox(
                             label=i18n("*训练集音频文件目录"),
-                            # value=r"D:\RVC1006\GPT-SoVITS\raw\xxx",
+                            value= "output/slicer_opt",
                             interactive=True,
                             placeholder=i18n("填切割后音频所在目录！读取的音频文件完整路径=该目录-拼接-list文件里波形对应的文件名（不是全路径）。如果留空则使用.list文件里的绝对全路径。"), scale=10
                         )
@@ -1016,7 +1016,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                             save_every_epoch = gr.Slider(minimum=1,maximum=max_sovits_save_every_epoch,step=1,label=i18n("保存频率save_every_epoch"),value=default_sovits_save_every_epoch,interactive=True)
                     with gr.Column():     
                         with gr.Column():                   
-                            if_save_latest = gr.Checkbox(label=i18n("是否仅保存最新的ckpt文件以节省硬盘空间"), value=True, interactive=True, show_label=True)
+                            if_save_latest = gr.Checkbox(label=i18n("是否仅保存最新的ckpt文件以节省硬盘空间"), value=False, interactive=True, show_label=True)
                             if_save_every_weights = gr.Checkbox(label=i18n("是否在每次保存时间点将最终小模型保存至weights文件夹"), value=True, interactive=True, show_label=True)
                             if_grad_ckpt = gr.Checkbox(label="v3是否开启梯度检查点节省显存占用", value=False, interactive=True if version == "v3" else False, show_label=True) # 只有V3s2可以用
                         with gr.Row():
@@ -1031,11 +1031,11 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 with gr.Row():
                     with gr.Column():
                         with gr.Row():
-                            batch_size1Bb = gr.Slider(minimum=1,maximum=40,step=1,label=i18n("每张显卡的batch_size"),value=default_batch_size_s1,interactive=True)
+                            batch_size1Bb = gr.Slider(minimum=1,maximum=40,step=1,label=i18n("每张显卡的batch_size,v3推荐降低"),value=default_batch_size_s1,interactive=True)
                             total_epoch1Bb = gr.Slider(minimum=2,maximum=50,step=1,label=i18n("总训练轮数total_epoch"),value=15,interactive=True)
                         with gr.Row():
                             save_every_epoch1Bb = gr.Slider(minimum=1,maximum=50,step=1,label=i18n("保存频率save_every_epoch"),value=5,interactive=True) 
-                            if_dpo = gr.Checkbox(label=i18n("是否开启dpo训练选项(实验性)"), value=False, interactive=True, show_label=True)   
+                            if_dpo = gr.Checkbox(label=i18n("是否开启dpo训练选项(实验性,开了不爆显存就开)"), value=False, interactive=True, show_label=True)   
                     with gr.Column():
                         with gr.Column():
                                 if_save_latest1Bb = gr.Checkbox(label=i18n("是否仅保存最新的ckpt文件以节省硬盘空间"), value=True, interactive=True, show_label=True)

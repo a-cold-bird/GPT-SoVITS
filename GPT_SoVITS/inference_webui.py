@@ -823,7 +823,7 @@ def html_left(text, label='p'):
                 </div>"""
 
 
-with gr.Blocks(title="GPT-SoVITS WebUI") as app:
+with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
     gr.Markdown(
         value=i18n("本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责. <br>如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录<b>LICENSE</b>.")
     )
@@ -858,7 +858,7 @@ with gr.Blocks(title="GPT-SoVITS WebUI") as app:
                 how_to_cut = gr.Dropdown(
                         label=i18n("怎么切"),
                         choices=[i18n("不切"), i18n("凑四句一切"), i18n("凑50字一切"), i18n("按中文句号。切"), i18n("按英文句号.切"), i18n("按标点符号切"), ],
-                        value=i18n("凑四句一切"),
+                        value=i18n("按中文句号。切"),
                         interactive=True, scale=1
                     )
                 gr.Markdown(value=html_center(i18n("语速调整，高为更快")))
