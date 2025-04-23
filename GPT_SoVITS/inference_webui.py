@@ -304,6 +304,7 @@ def change_sovits_weights(sovits_path, prompt_language=None, text_language=None)
         )
         model_version = version
     else:
+        hps.model.version=model_version
         vq_model = SynthesizerTrnV3(
             hps.data.filter_length // 2 + 1,
             hps.train.segment_size // hps.data.hop_length,
@@ -1276,5 +1277,5 @@ if __name__ == "__main__":
         inbrowser=True,
         share=is_share,
         server_port=infer_ttswebui,
-        quiet=True,
+        # quiet=True,
     )

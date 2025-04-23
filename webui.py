@@ -1951,5 +1951,5 @@ with gr.Blocks(title="GPT-SoVITS WebUI",theme=gr.themes.Soft()) as app:
         inbrowser=True,
         share=is_share,
         server_port=webui_port_main,
-        quiet=True,
+        # quiet=True,
     )
