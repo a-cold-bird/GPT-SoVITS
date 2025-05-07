@@ -172,11 +172,11 @@ with gr.Blocks(title="UVR5 WebUI") as app:
                     "h4",
                 )
             )
-            with gr.Row():
+            with gr.Row(theme=gr.themes.Soft()):
                 with gr.Column():
                     model_choose = gr.Dropdown(label=i18n("模型"), choices=uvr5_names)
                     dir_wav_input = gr.Textbox(
-                        label=i18n("输入待处理音频文件夹的绝对路径"),
+                        label=i18n("输入待处理音频文件夹路径"),
                         placeholder="/root/autodl-tmp/workdir/GPT-SoVITS/input",
                         value='/root/autodl-tmp/workdir/GPT-SoVITS/input'
                     )

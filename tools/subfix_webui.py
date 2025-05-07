@@ -303,7 +303,7 @@ if __name__ == "__main__":
 
     set_global(args.load_json, args.load_list, args.json_key_text, args.json_key_path, args.g_batch)
 
-    with gr.Blocks() as demo:
+    with gr.Blocks(theme=gr.themes.Soft()) as demo:
         with gr.Row():
             btn_change_index = gr.Button("跳转页码")
             btn_submit_change = gr.Button("保存修改")
