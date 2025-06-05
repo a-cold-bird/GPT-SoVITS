@@ -309,7 +309,7 @@ if __name__ == "__main__":
 
     with gr.Blocks(analytics_enabled=False,theme=gr.themes.Soft()) as demo:
         gr.Markdown(
-            value=i18n("Submit Text: 将当前页所有文本框内容手工保存到内存和文件(翻页前后或者退出标注页面前如果没点这个按钮，你再翻回来就回滚了，白忙活。)")
+            value=("保存修改: 将当前页所有文本框内容手工保存到内存和文件(翻页前后或者退出标注页面前如果没点这个按钮，你再翻回来就回滚了，白忙活。)")
         )
         with gr.Row():
             btn_change_index = gr.Button("跳转页码")

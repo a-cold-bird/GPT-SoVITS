@@ -125,7 +125,7 @@ def uvr(model_name, inp_root, save_root_vocal, paths, save_root_ins, agg, format
     yield "\n".join(infos)
 
 
-with gr.Blocks(title="UVR5 WebUI", analytics_enabled=False) as app:
+with gr.Blocks(title="UVR5 WebUI", analytics_enabled=False,theme=gr.themes.Soft()) as app:
     gr.Markdown(
         value=i18n("本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责.")
         + "<br>"
@@ -168,7 +168,7 @@ with gr.Blocks(title="UVR5 WebUI", analytics_enabled=False) as app:
                     "h4",
                 )
             )
-            with gr.Row(theme=gr.themes.Soft()):
+            with gr.Row():
                 with gr.Column():
                     model_choose = gr.Dropdown(label=i18n("模型"), choices=uvr5_names)
                     dir_wav_input = gr.Textbox(
